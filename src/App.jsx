@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react'
 import Auth from "./components/Auth.jsx"
 import Chat from './components/Chat.jsx'
+import Room from './components/Room.jsx'
 import Cookies from "universal-cookie"
 import { signOut } from 'firebase/auth'
-import {auth} from "./firebase-config.js"
+import { auth } from "./firebase-config.js"
 
 
 const cookies = new Cookies()
@@ -11,9 +12,9 @@ const cookies = new Cookies()
 function App() {
   const [isAuth, setIsAuth] = useState(cookies.get('auth-token'));
   const [room, setRoom] = useState(null);
-  console.log(room);
+  
 
-  const signUserOut= async ()=>{
+  const signUserOut = async () => {
     await signOut(auth);
     cookies.remove("auth-token");
     setIsAuth(false)
@@ -23,26 +24,21 @@ function App() {
   const roomInputRef = useRef(null)
   if (!isAuth) {
     return (
-      <div>
+      <div className='w-full min-h-screen flex flex-col justify-center items-center'>
         <Auth setIsAuth={setIsAuth} />
       </div>
     );
   }
 
   return (
-    <>
-      {room ?
-        <Chat room={room} /> :
-        <div>
-          <label>Enter room name: </label>
-          <input type="text"
-            ref={roomInputRef} />
-          <button onClick={() => setRoom(roomInputRef.current.value)}>Enter Chat</button>
-        </div>}
-        <div className="signout">
-          <button onClick={signUserOut}>signout</button>
-        </div>
-    </>
-  )
+    <div className='w-full h-screen overflow-hidden'>
+      <div className="w-full flex justify-end">
+        <button className="btn bg-red-600 m-5 text-white hover:bg-red-700" onClick={signUserOut}>Sign Out</button>
+      </div>
+      {room ? (
+        <Chat room={room} />
+      ) : <Room  roomInputRef={roomInputRef} setRoom={setRoom}/>}
+    </div>
+      )
 }
-export default App
+export default App;
